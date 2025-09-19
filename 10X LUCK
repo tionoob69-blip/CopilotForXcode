@@ -1,0 +1,115 @@
+loadstring([===[
+spawn(function()
+    local Players = game:GetService("Players")
+    local UserInput = game:GetService("UserInputService")
+    local Debris = game:GetService("Debris")
+    local lp = Players.LocalPlayer
+    local pg = lp:WaitForChild("PlayerGui")
+
+    if pg:FindFirstChild("KanzzFinalUI") then pg.KanzzFinalUI:Destroy() end
+    local screen = Instance.new("ScreenGui", pg)
+    screen.Name = "KanzzFinalUI"
+    screen.ResetOnSpawn = false
+
+    local main = Instance.new("Frame", screen)
+    main.AnchorPoint = Vector2.new(0.5,0.5)
+    main.Position = UDim2.new(0.5,0,0.5,0)
+    main.Size = UDim2.new(0.4,0,0.35,0)
+    main.BorderSizePixel = 0
+    main.Active = true
+    main.Draggable = true
+
+    local gradient2 = Instance.new("UIGradient", main)
+    gradient2.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(0,180,255)),
+        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0,60,120)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(20,100,20))
+    }
+
+    local title = Instance.new("TextLabel", main)
+    title.Size = UDim2.new(1,0,0.2,0)
+    title.BackgroundTransparency = 1
+    title.Font = Enum.Font.GothamBlack
+    title.TextScaled = true
+    title.Text = "KanZ Script"
+    title.TextColor3 = Color3.fromRGB(255,255,255)
+
+    local luck = Instance.new("TextLabel", main)
+    luck.Size = UDim2.new(1,0,0.2,0)
+    luck.Position = UDim2.new(0,0,0.22,0)
+    luck.BackgroundTransparency = 1
+    luck.Font = Enum.Font.GothamBold
+    luck.TextScaled = true
+    luck.Text = "Add 10X Luck"
+    luck.TextColor3 = Color3.fromRGB(255,230,120)
+
+    local btn = Instance.new("TextButton", main)
+    btn.Size = UDim2.new(0.5,0,0.18,0)
+    btn.AnchorPoint = Vector2.new(0.5,0)
+    btn.Position = UDim2.new(0.5,0,0.45,0)
+    btn.Font = Enum.Font.GothamBold
+    btn.TextScaled = true
+    btn.Text = "OFF"
+    btn.TextColor3 = Color3.fromRGB(255,255,255)
+    btn.BackgroundColor3 = Color3.fromRGB(200,50,50)
+    btn.BorderSizePixel = 0
+
+    local sub = Instance.new("TextLabel", main)
+    sub.Size = UDim2.new(1,0,0.18,0)
+    sub.AnchorPoint = Vector2.new(0.5,1)
+    sub.Position = UDim2.new(0.5,0,0.95,0)
+    sub.BackgroundTransparency = 1
+    sub.Font = Enum.Font.GothamBlack
+    sub.TextScaled = true
+    sub.Text = "!SUBSCRIBE!"
+    sub.TextColor3 = Color3.fromRGB(255,100,100)
+
+    -- efek lag muncul
+    spawn(function()
+        local origPos = main.Position
+        local startTime = tick()
+        while tick() - startTime < 1.5 do
+            local ox = math.random(-10,10)
+            local oy = math.random(-7,7)
+            main.Position = UDim2.new(origPos.X.Scale, origPos.X.Offset+ox, origPos.Y.Scale, origPos.Y.Offset+oy)
+            wait(0.05 + math.random()*0.07)
+        end
+        main.Position = origPos -- stabil
+    end)
+
+    -- tombol ON/OFF
+    local aktif = false
+    local SHARINGAN_ID = "rbxassetid://1847352423" -- fallback public sfx
+
+    btn.MouseButton1Click:Connect(function()
+        aktif = not aktif
+        if aktif then
+            btn.Text = "ON"
+            btn.BackgroundColor3 = Color3.fromRGB(50,200,80)
+            local char = lp.Character or lp.CharacterAdded:Wait()
+            local head = char and (char:FindFirstChild("Head") or char:FindFirstChildWhichIsA("BasePart"))
+            local sound = Instance.new("Sound")
+            sound.SoundId = SHARINGAN_ID
+            sound.Volume = 3
+            sound.Looped = false
+            if head then sound.Parent = head else sound.Parent = workspace end
+            sound:Play()
+            Debris:AddItem(sound,8)
+        else
+            btn.Text = "OFF"
+            btn.BackgroundColor3 = Color3.fromRGB(200,50,50)
+        end
+    end)
+
+    -- Ctrl+J toggle
+    local visible = true
+    UserInput.InputBegan:Connect(function(input,gpe)
+        if gpe then return end
+        if input.KeyCode == Enum.KeyCode.J and (UserInput:IsKeyDown(Enum.KeyCode.LeftControl) or UserInput:IsKeyDown(Enum.KeyCode.RightControl)) then
+            visible = not visible
+            main.Visible = visible
+        end
+    end)
+
+end)
+]===])()
